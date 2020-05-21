@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, db, sqlite3conn, sqldb, sqldblib, Forms, Controls,
-  Graphics, Dialogs, StdCtrls, ExtCtrls, Grids, DBGrids, FileUtil, process;
+  Graphics, Dialogs, StdCtrls, ExtCtrls, Grids, DBGrids, FileUtil, process, IniFiles;
 
 type
 
@@ -14,7 +14,6 @@ type
 
   TfrmMain = class(TForm)
     btnLoadAlbums: TButton;
-    btnSavetoDb: TButton;
     btnRepetidos: TButton;
     BtnFiltrar: TButton;
     Edit1: TEdit;
@@ -22,17 +21,11 @@ type
     Panel1: TPanel;
     pnlButtons: TPanel;
     Panel3: TPanel;
-    SQLDBLibraryLoader2: TSQLDBLibraryLoader;
-    SQLite3Connection1: TSQLite3Connection;
-    SQLScript1: TSQLScript;
-    SQLTransaction1: TSQLTransaction;
     grdAlbums: TStringGrid;
     procedure BtnFiltrarClick(Sender: TObject);
     procedure btnRepetidosClick(Sender: TObject);
     procedure btnLoadAlbumsClick(Sender: TObject);
-    procedure btnSavetoDbClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-
     procedure grdAlbumsClick(Sender: TObject);
     procedure grdAlbumsDblClick(Sender: TObject);
     procedure grdAlbumsHeaderClick(Sender: TObject; IsColumn: Boolean;
@@ -43,6 +36,9 @@ type
   private
     falbums: TList;
     forder: boolean;
+    fdeffolder: string;
+    fexecutable: string;
+    fcmd: string;
     procedure CreateLalbumsFromDir(ADir: string);
     procedure FillStringGrid;
     procedure ExcludeDiferents(ACriter: string);
@@ -64,7 +60,7 @@ uses
 {$R *.lfm}
 
 { TfrmMain }
-
+// muestra los albums cargados de la ruta que se especifica en el archivo configapp.ini
 procedure TfrmMain.btnLoadAlbumsClick(Sender: TObject);
 var
 aDir: string;
@@ -78,62 +74,36 @@ aSizeMb: integer;
 aAlbum: TRAlbum;
 begin
  falbums.free;
- ADir := 'z:\';
- CreateLAlbumsFromDir(ADir);
+ CreateLAlbumsFromDir(fdeffolder);
  FillStringGrid;
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+var
+   ainifile: TIniFile;
+begin
+  forder := false;
+  ainifile := TINIFile.Create('configapp.ini');
+  fdeffolder := ainifile.ReadString('General','defaultfolder','');
+  fexecutable := ainifile.ReadString('Player','playerpath','');
+  fcmd := ainifile.ReadString('Player','playercmd','');
+
+  ainifile.free;
 end;
 
 procedure TfrmMain.btnRepetidosClick(Sender: TObject);
 var
    afreport: Tfreport;
 begin
-afreport := TFreport.create(application);
-
-afreport.ffalbums := falbums;
- with afreport do
-      show
-
-
+  afreport := TFreport.create(application);
+  afreport.ffalbums := falbums;
+  with afreport do
+       show
 end;
 
 procedure TfrmMain.BtnFiltrarClick(Sender: TObject);
 begin
 
-end;
-
-procedure TfrmMain.btnSavetoDbClick(Sender: TObject);
-var
-   SqlStr: string;
-   i: integer;
-   aAlbum: TRAlbum;
-begin
-  SQLScript1.Script.Clear;
-  for i:= 0 to falbums.Count-1 do begin
-
-    aAlbum:= TRAlbum(FAlbums.Items[i]);
-    SQLStr:= 'INSERT INTO ALBUMS(FOLDER, CALIFICAC, TAMANO, MD5, SHORTALB) VALUES (' + '"' + aAlbum.fAlbum +'" , ' +
-              floatToStr(aAlbum.fcalif)+ ', ' + IntToStr(aAlbum.ftamano)  + ', ' +'"'+ aAlbum.fmd5 + '", '+
-              '"'+ aAlbum.fShortAlb +'"); ';
-    SQLScript1.Script.Add(sqlstr);
-  end;
-  try
-     SQLite3Connection1.open;
-     SQLTransaction1.Active:= true;
-     Sqlscript1.Execute;
-     SQLTransaction1.Commit;
-     showmessage('data inserted completed');
-
-  finally
-    SQLite3Connection1.close;
-    SQLTransaction1.active:= false;
-  end;
-end;
-
-procedure TfrmMain.FormCreate(Sender: TObject);
-begin
-  SQLDBLibraryLoader2.Enabled:=true;
-  SQLite3Connection1.Connected:=true;
-  forder := false;
 end;
 
 
@@ -204,8 +174,8 @@ begin
   if key = ord('P') then begin
      Process := TProcess.Create(nil);
      try
-       Process.Executable := 'C:\Program Files (x86)\foobar2000\foobar2000.exe';
-       Process.Parameters.Add('/add');
+       Process.Executable := fexecutable;
+       Process.Parameters.Add(fcmd);
        Process.Parameters.Add(aFolder);
        Process.Options := Process.Options + [poWaitOnExit];
        Process.Execute;

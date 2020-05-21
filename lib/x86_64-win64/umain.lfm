@@ -41,15 +41,6 @@ object frmMain: TfrmMain
         OnClick = btnLoadAlbumsClick
         TabOrder = 0
       end
-      object btnSavetoDb: TButton
-        Left = 80
-        Height = 31
-        Top = 136
-        Width = 94
-        Caption = 'Save to DB'
-        OnClick = btnSavetoDbClick
-        TabOrder = 1
-      end
       object btnRepetidos: TButton
         Left = 80
         Height = 31
@@ -57,7 +48,7 @@ object frmMain: TfrmMain
         Width = 94
         Caption = 'Mostrar Rep'
         OnClick = btnRepetidosClick
-        TabOrder = 2
+        TabOrder = 1
       end
       object BtnFiltrar: TButton
         Left = 176
@@ -66,7 +57,7 @@ object frmMain: TfrmMain
         Width = 46
         Caption = 'Filtrar'
         OnClick = BtnFiltrarClick
-        TabOrder = 3
+        TabOrder = 2
       end
       object Label1: TLabel
         Left = 16
@@ -81,7 +72,7 @@ object frmMain: TfrmMain
         Height = 28
         Top = 230
         Width = 100
-        TabOrder = 4
+        TabOrder = 3
       end
     end
     object Panel3: TPanel
@@ -121,48 +112,5 @@ object frmMain: TfrmMain
         OnKeyUp = grdAlbumsKeyUp
       end
     end
-  end
-  object SQLite3Connection1: TSQLite3Connection
-    Connected = False
-    LoginPrompt = False
-    DatabaseName = 'C:\Users\jos\Downloads\albumlist\music.db'
-    KeepConnection = False
-    Transaction = SQLTransaction1
-    left = 16
-  end
-  object SQLTransaction1: TSQLTransaction
-    Active = False
-    Database = SQLite3Connection1
-    left = 112
-  end
-  object SQLDBLibraryLoader2: TSQLDBLibraryLoader
-    Enabled = False
-    ConnectionType = 'SQLite3'
-    LibraryName = 'C:\Users\jos\Downloads\albumlist\sqlite3-64.dll'
-    left = 160
-  end
-  object SQLScript1: TSQLScript
-    DataBase = SQLite3Connection1
-    Transaction = SQLTransaction1
-    UseDollarString = False
-    Directives.Strings = (
-      'SET TERM'
-      'COMMIT WORK'
-      'COMMIT RETAIN'
-      'COMMIT'
-      '#IFDEF'
-      '#IFNDEF'
-      '#ELSE'
-      '#ENDIF'
-      '#DEFINE'
-      '#UNDEF'
-      '#UNDEFINE'
-    )
-    Terminator = ';'
-    CommentsinSQL = True
-    UseSetTerm = True
-    UseCommit = True
-    UseDefines = True
-    left = 56
   end
 end
