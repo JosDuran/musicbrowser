@@ -1,0 +1,65 @@
+object fReport: TfReport
+  Left = 448
+  Height = 539
+  Top = 183
+  Width = 773
+  AllowDropFiles = True
+  Caption = 'fReport'
+  ClientHeight = 539
+  ClientWidth = 773
+  DesignTimePPI = 120
+  OnDropFiles = FormDropFiles
+  LCLVersion = '2.0.6.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 539
+    Top = 0
+    Width = 773
+    Align = alClient
+    Caption = 'Panel1'
+    ClientHeight = 539
+    ClientWidth = 773
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 1
+      Height = 537
+      Top = 1
+      Width = 213
+      Align = alLeft
+      TabOrder = 0
+    end
+    object GroupBox1: TGroupBox
+      Left = 214
+      Height = 537
+      Top = 1
+      Width = 558
+      Align = alClient
+      Caption = 'Los archivos que aparecen aca deben ser borrados'
+      ClientHeight = 512
+      ClientWidth = 554
+      TabOrder = 1
+      object ListBox1: TListBox
+        Left = 0
+        Height = 484
+        Top = 0
+        Width = 554
+        Align = alClient
+        ItemHeight = 0
+        OnKeyUp = ListBox1KeyUp
+        Sorted = True
+        TabOrder = 0
+      end
+      object StatusBar1: TStatusBar
+        Left = 0
+        Height = 28
+        Top = 484
+        Width = 554
+        Panels = <        
+          item
+            Width = 50
+          end>
+        SimplePanel = False
+      end
+    end
+  end
+end

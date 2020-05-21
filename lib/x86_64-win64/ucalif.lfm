@@ -1,0 +1,46 @@
+object frmRating: TfrmRating
+  Left = 768
+  Height = 300
+  Top = 285
+  Width = 400
+  Caption = 'Calificar Album'
+  ClientHeight = 300
+  ClientWidth = 400
+  DesignTimePPI = 120
+  LCLVersion = '2.0.6.0'
+  object TrackBar1: TTrackBar
+    Left = 56
+    Height = 31
+    Top = 96
+    Width = 255
+    OnChange = TrackBar1Change
+    Position = 0
+    TabOrder = 0
+  end
+  object btnOK: TButton
+    Left = 56
+    Height = 31
+    Top = 176
+    Width = 94
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object BtnCancel: TButton
+    Left = 198
+    Height = 31
+    Top = 175
+    Width = 94
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 2
+  end
+  object Edit1: TEdit
+    Left = 88
+    Height = 28
+    Top = 128
+    Width = 100
+    ReadOnly = True
+    TabOrder = 3
+  end
+end
