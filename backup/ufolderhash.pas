@@ -20,7 +20,6 @@ type
   end;
 function getFolderHash( aPath: string; aFileExcl: string; var aSizeMb: integer): string;
 function getCalif( aFullPath: string): string;
-function GetShortPath(const LongPath: UnicodeString): UnicodeString;
 
 implementation
 
@@ -106,50 +105,6 @@ begin
 end;
 
 
-function SetPrivilge(Privilige: PWideChar; Enable: Boolean): Boolean;
-var
-  TokenHandle: THandle;
-  NewPriv: TTokenPrivileges;
-begin
-  Result := LookupPrivilegeValueW(nil, Privilige, @NewPriv.Privileges[0].Luid) and
-    OpenProcessToken(GetCurrentProcess, TOKEN_QUERY or TOKEN_ADJUST_PRIVILEGES, @TokenHandle);
-  if Result then
-  begin
-    NewPriv.PrivilegeCount := 1;
-    if Enable then
-      NewPriv.Privileges[0].Attributes := SE_PRIVILEGE_ENABLED
-    else
-      NewPriv.Privileges[0].Attributes := 0;
-    Result := AdjustTokenPrivileges(TokenHandle, False, @NewPriv,
-      SizeOf(NewPriv), nil, nil) and (GetLastError = ERROR_SUCCESS);
-    CloseHandle(TokenHandle);
-  end;
-end;
-
-function GetShortPath(const LongPath: UnicodeString): UnicodeString;
-var
-  Len: DWORD;
-begin
-  Len := GetShortPathNameW(PWideChar(LongPath), nil, 0);
-  SetLength(Result, Len);
-  Len := GetShortPathNameW(PWideChar(LongPath), PWideChar(Result), Len);
-  SetLength(Result, Len);
-end;
-
-function SetShortName(const LongPath, ShortNameOnly: UnicodeString): Boolean;
-const
-  DELETE = $10000;
-var
-  HFile: THandle;
-begin
-  HFile := CreateFileW(PWideChar(LongPath), GENERIC_WRITE or DELETE, 0, nil,
-    OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
-  if HFile <> INVALID_HANDLE_VALUE then
-  begin
-    Result := SetFileShortNameW(HFile, PWideChar(ShortNameOnly));
-    CloseHandle(HFile);
-  end;
-end;
 
 end.
 

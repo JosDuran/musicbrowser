@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, db, sqlite3conn, sqldb, sqldblib, Forms, Controls,
-  Graphics, Dialogs, StdCtrls, ExtCtrls, Grids, DBGrids, FileUtil, process, IniFiles;
+  Graphics, Dialogs, StdCtrls, ExtCtrls, Grids, DBGrids, Menus, FileUtil,
+  process, strutils, IniFiles;
 
 type
 
@@ -14,16 +15,22 @@ type
 
   TfrmMain = class(TForm)
     btnLoadAlbums: TButton;
-    btnRepetidos: TButton;
     BtnFiltrar: TButton;
-    Edit1: TEdit;
+    btnClear: TButton;
+    edtFiltro: TEdit;
     Label1: TLabel;
+    mnuUtil: TMenuItem;
+    mnuBuscRep: TMenuItem;
+    mnuHelp: TMenuItem;
+    mnuAbout: TMenuItem;
+    mnuMain: TMainMenu;
     Panel1: TPanel;
     pnlButtons: TPanel;
     Panel3: TPanel;
     grdAlbums: TStringGrid;
+    procedure btnClearClick(Sender: TObject);
     procedure BtnFiltrarClick(Sender: TObject);
-    procedure btnRepetidosClick(Sender: TObject);
+
     procedure btnLoadAlbumsClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure grdAlbumsClick(Sender: TObject);
@@ -32,6 +39,8 @@ type
       Index: Integer);
     procedure grdAlbumsKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure mnuAboutClick(Sender: TObject);
+    procedure mnuBuscRepClick(Sender: TObject);
 
   private
     falbums: TList;
@@ -41,7 +50,8 @@ type
     fcmd: string;
     procedure CreateLalbumsFromDir(ADir: string);
     procedure FillStringGrid;
-    procedure ExcludeDiferents(ACriter: string);
+    procedure FillFilteredStringGrid;
+   // procedure ExcludeDiferents(ACriter: string);
     procedure Sortlist(ACritery: string; aOrder: integer); //0 ascendente 1 descendente
 
   public
@@ -54,7 +64,7 @@ var
 implementation
 
 uses
-  UfolderHash, ureport, ucalif;
+  UfolderHash, ureport, ucalif, uabout;
 
 
 {$R *.lfm}
@@ -83,7 +93,7 @@ var
    ainifile: TIniFile;
 begin
   forder := false;
-  ainifile := TINIFile.Create('DB.ini');
+  ainifile := TINIFile.Create('configapp.ini');
   fdeffolder := ainifile.ReadString('General','defaultfolder','');
   fexecutable := ainifile.ReadString('Player','playerpath','');
   fcmd := ainifile.ReadString('Player','playercmd','');
@@ -91,19 +101,45 @@ begin
   ainifile.free;
 end;
 
-procedure TfrmMain.btnRepetidosClick(Sender: TObject);
-var
-   afreport: Tfreport;
-begin
-  afreport := TFreport.create(application);
-  afreport.ffalbums := falbums;
-  with afreport do
-       show
-end;
+
+
+
 
 procedure TfrmMain.BtnFiltrarClick(Sender: TObject);
+var
+   i: integer;
+   afilter: string;
+   aFullPathAlb: string;
+   aAlbum: TRAlbum;
+   aFlag: boolean;
 begin
+  afilter := edtfiltro.Text;
 
+  for i:= 0 to falbums.Count-1 do begin
+    aAlbum := TRAlbum(fAlbums.Items[i]);
+    if aAlbum.fvisible = true then begin
+       aFullPathAlb:= aAlbum.falbum;
+       aFlag :=   AnsiContainsText(aFullPathAlb,afilter);
+       if aFlag then
+          aAlbum.fvisible:= true
+       else
+           aAlbum.fvisible := false;
+    end;
+  end;
+  FillFilteredStringGrid;
+end;
+
+procedure TfrmMain.btnClearClick(Sender: TObject);
+var
+   i: integer;
+   aAlbum: TRAlbum;
+begin
+  for i:= 0 to falbums.Count-1 do begin
+     aAlbum := TRAlbum(fAlbums.Items[i]);
+     aAlbum.fvisible := true;
+  end;
+  FillStringGrid;
+  edtFiltro.clear;
 end;
 
 
@@ -185,6 +221,29 @@ begin
   end;
 end;
 
+procedure TfrmMain.mnuAboutClick(Sender: TObject);
+var
+   AfrmAbout: TfrmAbout;
+begin
+  AfrmAbout := TfrmAbout.Create(nil);
+  with afrmAbout do
+    try   showModal;
+    finally free;
+
+end;
+
+//abre una ventana donde se pueden arrastrar albums repetidos y te muestra que
+//albums ya estan en tu coleccion
+procedure TfrmMain.mnuBuscRepClick(Sender: TObject);
+var
+   afreport: Tfreport;
+begin
+  afreport := TFreport.create(application);
+  afreport.ffalbums := falbums;
+  with afreport do
+       show
+end;
+
 procedure TfrmMain.CreateLalbumsFromDir(ADir: string);
 var
 aDirs : TStringlist;
@@ -219,6 +278,7 @@ try
       aAlbum.fcalif := StrToFloat(acalif);
       aAlbum.ftamano:= aSizeMb;
       aAlbum.fmd5 := aItemHash;
+      aalbum.fvisible:= true;
       fAlbums.add(aAlbum);
   end;
   ShowMessage(Format('Found %d directorios de albums', [aDirs.Count]));
@@ -237,11 +297,40 @@ begin
   if Assigned(falbums) then begin
      for i:= 0 to falbums.count-1 do begin
          aalbum:= TrAlbum(falbums.Items[i]);
-         grdAlbums.cells[1,i+1]:= aalbum.fAlbum;
-         grdAlbums.cells[2,i+1]:= FloatToStr(aalbum.fcalif);
-         grdAlbums.cells[3,i+1]:= IntToStr(aalbum.ftamano);
-         grdAlbums.cells[4,i+1]:= aalbum.fmd5;
-         grdAlbums.Rowcount:=grdAlbums.rowcount+1;
+         if aalbum.fvisible then begin
+            grdAlbums.cells[1,i+1]:= aalbum.fAlbum;
+            grdAlbums.cells[2,i+1]:= FloatToStr(aalbum.fcalif);
+            grdAlbums.cells[3,i+1]:= IntToStr(aalbum.ftamano);
+            grdAlbums.cells[4,i+1]:= aalbum.fmd5;
+            grdAlbums.Rowcount:=grdAlbums.rowcount+1;
+         end;
+
+     end;
+     grdAlbums.AutoSizeColumn(1);
+     grdAlbums.AutoSizeColumn(4);
+  end;
+end;
+
+procedure TfrmMain.FillFilteredStringGrid;
+var
+AAlbum: TRAlbum;
+i: integer;
+idxrow : integer;
+begin
+  grdAlbums.clear;
+  idxRow:= 0;
+  grdAlbums.RowCount:=2;
+  if Assigned(falbums) then begin
+     for i:= 0 to falbums.count-1 do begin
+         aalbum:= TrAlbum(falbums.Items[i]);
+         if aalbum.fvisible then begin
+            grdAlbums.cells[1,idxrow+1]:= aalbum.fAlbum;
+            grdAlbums.cells[2,idxrow+1]:= FloatToStr(aalbum.fcalif);
+            grdAlbums.cells[3,idxrow+1]:= IntToStr(aalbum.ftamano);
+            grdAlbums.cells[4,idxrow+1]:= aalbum.fmd5;
+            inc(idxrow);
+            grdAlbums.Rowcount:=grdAlbums.rowcount+1;
+         end;
 
      end;
      grdAlbums.AutoSizeColumn(1);
@@ -250,14 +339,7 @@ begin
 
 end;
 
-procedure TfrmMain.ExcludeDiferents(ACriter: string);
-var
-   i: integer;
-begin
-  for i:= 0 to falbums.count-1 do begin
 
-  end;
-end;
 
 procedure TfrmMain.Sortlist(ACritery: string; aOrder: integer);  //0 ascendente 1 descendete
 var
