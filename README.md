@@ -9,6 +9,10 @@ optional
 
 configure parameters at configapp.ini file
 
+video in spanish
+
+https://youtu.be/Ce9HTaRxgXo
+
 regards
 
 Jose Duran
