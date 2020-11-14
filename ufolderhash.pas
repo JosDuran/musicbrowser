@@ -89,7 +89,7 @@ var
   acalif: string;
   aFullPathFile: string;
 begin
-  AFullPathFile := AFullPath + '\calificacion.txt';
+  AFullPathFile := AFullPath + '\albuminfo.txt';
   if FileExists(AfullPathFile) then
   begin
      AssignFile(txtfile,aFullPathFile);

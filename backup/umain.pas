@@ -19,6 +19,7 @@ type
     btnClear: TButton;
     edtFiltro: TEdit;
     Label1: TLabel;
+    MenuItem1: TMenuItem;
     mnuUtil: TMenuItem;
     mnuBuscRep: TMenuItem;
     mnuHelp: TMenuItem;
@@ -39,6 +40,7 @@ type
       Index: Integer);
     procedure grdAlbumsKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure MenuItem1Click(Sender: TObject);
     procedure mnuAboutClick(Sender: TObject);
     procedure mnuBuscRepClick(Sender: TObject);
 
@@ -221,6 +223,24 @@ begin
   end;
 end;
 
+procedure TfrmMain.MenuItem1Click(Sender: TObject);
+var
+   i: integer;
+   aAlbum: tralbum;
+   aFileToRen: string;
+   aNewFile: string;
+   aFolder: string;
+begin
+  for i:= 0 to falbums.Count -1 do begin;
+    aAlbum := TRAlbum(falbums.Items[i]);
+    aFolder := aAlbum.fAlbum;
+    aFileToRen := aFolder  + '\calificacion.txt';
+    aNewFile := aFolder + '\albuminfo.txt';
+    RenameFile(AfileToRen,ANewFile);
+  end;
+
+end;
+
 procedure TfrmMain.mnuAboutClick(Sender: TObject);
 var
    AfrmAbout: TfrmAbout;
@@ -229,7 +249,7 @@ begin
   with afrmAbout do
     try   showModal;
     finally free;
-
+  end;
 end;
 
 //abre una ventana donde se pueden arrastrar albums repetidos y te muestra que

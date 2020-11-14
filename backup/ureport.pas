@@ -63,7 +63,7 @@ procedure TfReport.FormDropFiles(Sender: TObject;
 
 var
    i,j: integer;
-   adirdraged: string;
+   adirdraged, adirorig : string;
    posit: integer;
    aalbum: tralbum;
    aHashDraged, aHashOrig: string;

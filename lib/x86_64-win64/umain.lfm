@@ -123,6 +123,11 @@ object frmMain: TfrmMain
         Caption = 'Buscar Albums Repetidos'
         OnClick = mnuBuscRepClick
       end
+      object MenuItem1: TMenuItem
+        Caption = 'bulk rename'
+        Enabled = False
+        OnClick = MenuItem1Click
+      end
     end
     object mnuHelp: TMenuItem
       Caption = 'Ayuda'

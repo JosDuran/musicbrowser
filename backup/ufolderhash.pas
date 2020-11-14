@@ -17,6 +17,7 @@ type
     fcalif: double;
     ftamano: integer;
     fmd5: string;
+    fvisible: boolean;
   end;
 function getFolderHash( aPath: string; aFileExcl: string; var aSizeMb: integer): string;
 function getCalif( aFullPath: string): string;

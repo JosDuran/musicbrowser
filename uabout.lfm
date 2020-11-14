@@ -40,7 +40,7 @@ object frmAbout: TfrmAbout
       object Label2: TLabel
         Left = 24
         Height = 20
-        Top = 120
+        Top = 112
         Width = 157
         Caption = 'Powered by chasquisoft'
         ParentColor = False
@@ -128,6 +128,14 @@ object frmAbout: TfrmAbout
         Top = 56
         Width = 216
         Caption = 'GNU  General Public License v2.0'
+        ParentColor = False
+      end
+      object Label4: TLabel
+        Left = 24
+        Height = 20
+        Top = 80
+        Width = 186
+        Caption = 'Development by Jose Duran'
         ParentColor = False
       end
     end

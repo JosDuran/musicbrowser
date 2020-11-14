@@ -80,7 +80,7 @@ begin
          aalbum:= TRAlbum(ffAlbums.items[posit]);
          adirorig:= aalbum.fAlbum;
          aHashOrig:= aalbum.fmd5;
-         aHashDraged := getFolderHash(aDirDragedLong,'calificacion.txt',aSize);
+         aHashDraged := getFolderHash(aDirDragedLong,'albuminfo.txt',aSize);
          if (aHashOrig = aHashDraged) then begin
             listbox1.items.add(adirdraged);
             inc(j);

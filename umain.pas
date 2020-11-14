@@ -19,6 +19,7 @@ type
     btnClear: TButton;
     edtFiltro: TEdit;
     Label1: TLabel;
+    MenuItem1: TMenuItem;
     mnuUtil: TMenuItem;
     mnuBuscRep: TMenuItem;
     mnuHelp: TMenuItem;
@@ -39,6 +40,7 @@ type
       Index: Integer);
     procedure grdAlbumsKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure MenuItem1Click(Sender: TObject);
     procedure mnuAboutClick(Sender: TObject);
     procedure mnuBuscRepClick(Sender: TObject);
 
@@ -171,7 +173,7 @@ begin
    AFolder:= grdAlbums.Cells[1,fila ];
    if TfrmRating.getcalif(acalif) then begin
       //creamos un archivo de textodd ;
-      fullpathcalif:= AFolder+ '\calificacion.txt';
+      fullpathcalif:= AFolder+ '\albuminfo.txt';
       AssignFile(afile,fullpathcalif);
       rewrite(afile);
       aline :=FloatToStr(acalif/2);
@@ -219,6 +221,24 @@ begin
        Process.Free;
      end;
   end;
+end;
+
+procedure TfrmMain.MenuItem1Click(Sender: TObject);
+var
+   i: integer;
+   aAlbum: tralbum;
+   aFileToRen: string;
+   aNewFile: string;
+   aFolder: string;
+begin
+  for i:= 0 to falbums.Count -1 do begin;
+    aAlbum := TRAlbum(falbums.Items[i]);
+    aFolder := aAlbum.fAlbum;
+    aFileToRen := aFolder  + '\calificacion.txt';
+    aNewFile := aFolder + '\albuminfo.txt';
+    RenameFile(AfileToRen,ANewFile);
+  end;
+
 end;
 
 procedure TfrmMain.mnuAboutClick(Sender: TObject);
@@ -269,7 +289,7 @@ try
   FindAllDirectories(aDirs, aDir,  false); //find e.g. all pascal sourcefiles
   for i := 0 to aDirs.count-1 do begin
       aItemPath:= aDirs.Strings[i];
-      aItemHash:= getFolderHash(aItemPath, 'calificacion.txt', asizeMb);
+      aItemHash:= getFolderHash(aItemPath, 'albuninfo.txt', asizeMb);
       acalif := getCalif(aItempath);
       // creamos un item del tipo tralbum
       aAlbum := TRAlbum.create;
